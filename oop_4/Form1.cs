@@ -25,41 +25,43 @@ namespace oop_4
             private int x, y;
             private const int radius = 40;
             public bool selected = false;
-            private bool deleted = false;
             public CCircle() { x = 0; y = 0; }
-            public CCircle(int x, int y) { this.x = x; this.y = y; }
-            public CCircle(CCircle circle) { x = circle.x; y = circle.y; }
+            public CCircle(int x, int y)
+            { 
+                this.x = x; 
+                this.y = y;
+            }
+            public CCircle(CCircle circle)
+            { 
+                x = circle.x;
+                y = circle.y; 
+            }
             ~CCircle() { }
             public void DrawMe(PaintEventArgs e)
             {
-                Pen pen = new Pen(Color.Brown, 3);
-                if (selected && !deleted)
+                Pen pen = new Pen(Color.Black, 4);
+                if (selected)// && !deleted)
                 {
                     e.Graphics.DrawEllipse(pen, x - radius, y - radius, radius * 2, radius * 2);
                     e.Graphics.FillEllipse(Brushes.Blue, x - radius, y - radius, radius * 2, radius * 2);
                 }
-                else if (deleted)
-                {
-                    pen.Color = SystemColors.Control;
-                    e.Graphics.DrawEllipse(pen, x - radius, y - radius, radius * 2, radius * 2);
-                    e.Graphics.FillEllipse(SystemBrushes.Control, x - radius, y - radius, radius * 2, radius * 2);
-                }
                 else
                 {
                     e.Graphics.DrawEllipse(pen, x - radius, y - radius, radius * 2, radius * 2);
-                    e.Graphics.FillEllipse(Brushes.Black, x - radius, y - radius, radius * 2, radius * 2);
+                    e.Graphics.FillEllipse(Brushes.Green, x - radius, y - radius, radius * 2, radius * 2);
                 }
             }
             public bool SelectionCheck(MouseEventArgs e, bool CrtlPressed, bool MultiplySelections)
             {
                 if ((e.X > x - radius && e.X < x + radius) && (e.Y > y - radius && e.Y < y + radius))
                 {
-                    if (MultiplySelections) { selected = true; }
+                    if (MultiplySelections) 
+                        selected = true;
                     return true;
                 }
                 else
                 {
-                    if (!CrtlPressed) { selected = false; }
+                    if (!CrtlPressed)  selected = false; 
                     return false;
                 }
             }
@@ -74,13 +76,7 @@ namespace oop_4
                     return false;
                 }
             }
-            public void DeleteMeIfSelected()
-            {
-                if (selected)
-                {
-                    deleted = true;
-                }
-            }
+
             public int getRLength(MouseEventArgs e)
             {
                 return (int)Math.Sqrt(Math.Pow((e.X - x), 2) + Math.Pow((e.Y - y), 2));
@@ -122,7 +118,7 @@ namespace oop_4
                 {
                     for (int i = 0; i < size; i++)
                     {
-                        if (array[i].SelectionCheck(e, CtrlPressed, MultiplySelections) == true) { anyIsSelected = true; }
+                        if (array[i].SelectionCheck(e, CtrlPressed, MultiplySelections) == true)  anyIsSelected = true; 
                     }
                 }
                 else
@@ -143,7 +139,7 @@ namespace oop_4
                     }
                     if (nearestObj != null)
                     {
-                        if (!CtrlPressed) { MakeAllObjsUnselected(); }
+                        if (!CtrlPressed)  MakeAllObjsUnselected();
                         nearestObj.selected = true;
                     }
 
@@ -173,23 +169,19 @@ namespace oop_4
                 for (int i = 0; i < size; i++)
                 {
                     if (array[i] == CircleToDelete)
-                    {
                         elemFind = true;
-                    }
-                    if (elemFind) { newArr[i] = array[i + 1]; }
-                    else { newArr[i] = array[i]; }
+                    if (elemFind) 
+                        newArr[i] = array[i + 1];
+                    else 
+                        newArr[i] = array[i];
                 }
-                if (array[size] == CircleToDelete) { elemFind = true; } //Для последнего элемента
+                if (array[size] == CircleToDelete)
+                    elemFind = true; //Для последнего элемента
                 array = newArr;
-                if (!elemFind) { throw new Exception("ObjNotFoundInContainer"); }
+                if (!elemFind) 
+                    throw new Exception("ObjNotFoundInContainer");
             }
-            public void MakeSelectedObjsDeleted()
-            {
-                for (int i = 0; i < size; i++)
-                {
-                    array[i].DeleteMeIfSelected();
-                }
-            }
+
             public void MakeLastObjSelected()
             {
                 if (size > 0)
@@ -231,11 +223,11 @@ namespace oop_4
             if (e.KeyCode == Keys.ControlKey)
             {
                 label2.Text = "CtrlPressed = false";
+                checkedListBox1.SetItemChecked(1, false);
                 CtrlPressed = false;
             }
             if (e.KeyCode == Keys.Delete)
             {
-                c.MakeSelectedObjsDeleted();
                 c.DeleteSelectedFromContainer();
                 c.MakeLastObjSelected();
                 this.Refresh();
@@ -245,23 +237,17 @@ namespace oop_4
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
 
-
-        }
-
-        private void Form1_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            //if (e.KeyChar == Keys.ControlKey || checkBox2.Checked)
-            //{
-            MessageBox.Show(e.KeyChar.ToString());
-            label2.Text += e.KeyChar.ToString();
-            //"CtrlPressed = true";
-            //CtrlPressed = true;
-            //}
+            if (e.KeyCode == Keys.ControlKey)// || checkedListBox1.CheckedIndices.Contains(1))
+            {
+                label2.Text = "CtrlPressed = true";
+                checkedListBox1.SetItemChecked(1, true);
+                CtrlPressed = true;
+            }
         }
 
         private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (checkedListBox1.CheckedIndices.Contains(1))
+            if (checkedListBox1.CheckedIndices.Contains(0))
             {
                 label1.Text = "MultiplySelections = true";
                 MultiplySelections = true;
@@ -271,6 +257,11 @@ namespace oop_4
                 label1.Text = "MultiplySelections = false";
                 MultiplySelections = false;
             }
+        }
+
+        private void checkedListBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            this.ActiveControl = null;
         }
     }
 }
